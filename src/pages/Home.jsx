@@ -18,6 +18,7 @@ import {
   Globe2, 
   Flame, 
   Database,
+  Crosshair,
   Sparkles,
   Zap,
   CheckCircle2
@@ -46,6 +47,7 @@ export default function Home() {
       case 'Globe2': return <Globe2 {...props} />;
       case 'Flame': return <Flame {...props} />;
       case 'Database': return <Database {...props} />;
+      case 'Crosshair': return <Crosshair {...props} />;
       default: return <Shield {...props} />;
     }
   };

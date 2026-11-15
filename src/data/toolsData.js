@@ -150,6 +150,25 @@ export const TOOLS = [
     related: ['crypto-engine', 'password-auditor', 'crypto-vault']
   },
 
+  // 9. Track — OSINT Suite
+  {
+    id: 'track',
+    name: 'Track',
+    category: 'network',
+    icon: 'Crosshair',
+    shortDesc: 'OSINT suite: IP geolocation, phone number decode, and username search across 24 platforms.',
+    path: '/tools/track',
+    status: 'ready',
+    metaTitle: 'Track — OSINT Recon Suite',
+    plainDesc: 'Trace IPs, decode phone numbers, and map usernames across 24 social platforms.',
+    helpText: [
+      'OSINT (Open Source Intelligence) only uses publicly available data — no hacking involved.',
+      'Phone number decoding runs entirely offline using the libphonenumber-js library in your browser.',
+      'Username links open the platform profile URL — you must click each one to verify the account exists.'
+    ],
+    related: ['ip-tracker', 'dns-recon', 'mac-recon']
+  },
+
   // Coming Soon Tools
   {
     id: 'port-scanner',

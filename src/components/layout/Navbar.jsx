@@ -11,8 +11,7 @@ import {
   Key, 
   ShieldCheck,
   Search
-} from 'lucide-react';
-import { CATEGORIES, TOOLS } from '../../data/toolsData';
+} from 'lucide-react';import { CATEGORIES, TOOLS } from '../../data/toolsData';
 
 export default function Navbar({ darkMode, setDarkMode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
