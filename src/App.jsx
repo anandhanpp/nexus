@@ -14,7 +14,6 @@ import PasswordAuditor from './pages/tools/PasswordAuditor';
 import CryptoEngine from './pages/tools/CryptoEngine';
 import CryptoVault from './pages/tools/CryptoVault';
 import FileIntegrity from './pages/tools/FileIntegrity';
-import Track from './pages/tools/Track';
 
 export default function App() {
   return (
@@ -33,7 +32,6 @@ export default function App() {
         <Route path="/tools/crypto-engine" element={<CryptoEngine />} />
         <Route path="/tools/crypto-vault" element={<CryptoVault />} />
         <Route path="/tools/file-integrity" element={<FileIntegrity />} />
-        <Route path="/tools/track" element={<Track />} />
 
         {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,97 +1,123 @@
 import React from 'react';
-import { Shield, Zap, Lock, Cpu, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function About() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-12 animate-fadeIn">
-      <header className="space-y-4 border-b border-slate-200 dark:border-slate-800 pb-8 text-center sm:text-left">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
-          <span>Mission & Architecture</span>
-        </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          About Nexus Hub
+    <div className="max-w-4xl mx-auto px-4 py-12 sm:py-16 space-y-12 animate-fadeIn text-white">
+      {/* Header */}
+      <header className="space-y-4 border-b border-white/10 pb-8">
+        <span className="text-xs font-mono tracking-[0.2em] uppercase text-zinc-500 block">
+          SPECIFICATION // ARCHITECTURE & GOALS
+        </span>
+        <h1 className="font-pixel text-4xl sm:text-6xl font-bold uppercase tracking-tight text-white leading-tight">
+          ABOUT EX8 // NEXUS
         </h1>
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-          Building fast, accessible, zero-knowledge cybersecurity tools that anyone can use in under 10 seconds without training or specialized setup.
+        <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-2xl font-sans">
+          A minimalist, browser-native cybersecurity workstation built for developers, sysadmins, and security analysts who need immediate verification with zero cloud telemetry.
         </p>
       </header>
 
       {/* Target Audiences */}
-      <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Built for Three Distinct Audiences
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 space-y-2">
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
-              Beginners & Everyday Users
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Plain-English verdicts, no confusing jargon, clear color + icon status indicators, and actionable guidance in simple sentences.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 space-y-2">
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
-              IT Staff & Helpdesk
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Rapid troubleshooting tools like Subnet Calculator, MAC OUI vendor lookups, and DoH DNS records with zero software installation required.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 space-y-2">
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
-              Security Professionals
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              "Show Details" toggles reveal raw 32-bit binary masks, full DNS answers, Shannon entropy calculations, and AES-GCM primitives.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Architecture Principles */}
       <section className="space-y-6">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Architectural Principles
-        </h2>
-        <div className="space-y-4 text-sm sm:text-base text-slate-600 dark:text-slate-300">
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-            <p>
-              <strong className="text-slate-900 dark:text-white">100% Client-Side Computing:</strong> All calculations, cryptographic hashing, key derivations, and note encryptions run locally in your browser memory via the native W3C Web Crypto API.
+        <div>
+          <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-white">
+            OPERATIONAL AUDIENCES
+          </h3>
+          <div className="w-8 h-[2px] bg-white my-2"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 border border-white/15 bg-black space-y-2">
+            <span className="font-mono text-xs text-zinc-500 uppercase tracking-wider block">
+              01 // IT & SYSADMINS
+            </span>
+            <h4 className="font-sans font-bold text-white uppercase tracking-wide text-sm">
+              Instant Triage
+            </h4>
+            <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+              Subnet allocation planning, MAC OUI vendor lookups, and DoH DNS records without opening terminal command-lines or installing CLI tools.
             </p>
           </div>
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-            <p>
-              <strong className="text-slate-900 dark:text-white">No Backend / No Data Harvesting:</strong> Nexus Hub operates with zero servers, zero cookies, zero advertising trackers, and zero user accounts.
+
+          <div className="p-6 border border-white/15 bg-black space-y-2">
+            <span className="font-mono text-xs text-zinc-500 uppercase tracking-wider block">
+              02 // DEVELOPERS
+            </span>
+            <h4 className="font-sans font-bold text-white uppercase tracking-wide text-sm">
+              Crypto Primitives
+            </h4>
+            <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+              Testing HMAC, SHA-256 digests, Base64/Hex encoding, and AES-GCM payloads with verifiable byte-level outputs.
             </p>
           </div>
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-            <p>
-              <strong className="text-slate-900 dark:text-white">Under 10-Second Workflows:</strong> Single unified tool template, intuitive inputs, clear primary action buttons, and immediate feedback.
+
+          <div className="p-6 border border-white/15 bg-black space-y-2">
+            <span className="font-mono text-xs text-zinc-500 uppercase tracking-wider block">
+              03 // DEFENSIVE ANALYSTS
+            </span>
+            <h4 className="font-sans font-bold text-white uppercase tracking-wide text-sm">
+              Integrity & Leaks
+            </h4>
+            <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+              In-browser streaming file hashing for tamper verification and k-anonymity SHA-1 leak audits with zero password exposure.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="p-6 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Architectural Principles */}
+      <section className="space-y-6">
         <div>
-          <h3 className="font-bold text-slate-900 dark:text-white text-base">Ready to test your systems?</h3>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">Explore all 8 available security utilities right now.</p>
+          <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-white">
+            ARCHITECTURAL SPECIFICATION
+          </h3>
+          <div className="w-8 h-[2px] bg-white my-2"></div>
         </div>
+
+        <div className="border border-white/15 divide-y divide-white/10 text-xs font-mono">
+          <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="font-bold text-white uppercase">Client-Side Runtime</span>
+              <p className="text-zinc-400 font-sans mt-0.5">Execution occurs strictly within browser JavaScript threads; zero middleman servers.</p>
+            </div>
+            <span className="text-zinc-500 uppercase shrink-0">W3C SUBTLECRYPTO</span>
+          </div>
+
+          <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="font-bold text-white uppercase">Memory Isolation</span>
+              <p className="text-zinc-400 font-sans mt-0.5">Encrypted notes and temporary payloads are cleared upon session destruction.</p>
+            </div>
+            <span className="text-zinc-500 uppercase shrink-0">ZERO PERSISTENCE</span>
+          </div>
+
+          <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="font-bold text-white uppercase">DoH Standards</span>
+              <p className="text-zinc-400 font-sans mt-0.5">Direct encrypted DNS lookup via Cloudflare and Google DoH JSON endpoints.</p>
+            </div>
+            <span className="text-zinc-500 uppercase shrink-0">RFC 8484</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Back to Apps */}
+      <div className="pt-4 border-t border-white/10 flex items-center justify-between">
         <Link
           to="/"
-          className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs sm:text-sm whitespace-nowrap transition-colors flex items-center gap-2"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-black font-mono text-xs font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors"
         >
-          <span>Explore All Tools</span>
-          <ArrowRight className="w-4 h-4" />
+          <span>BROWSE ALL APPS</span>
+          <ArrowUpRight className="w-3.5 h-3.5" />
         </Link>
-      </section>
+        <Link
+          to="/privacy"
+          className="text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-white underline underline-offset-4 decoration-white/30"
+        >
+          READ ZERO-TELEMETRY AUDIT
+        </Link>
+      </div>
     </div>
   );
 }

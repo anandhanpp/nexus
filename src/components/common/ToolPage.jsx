@@ -10,9 +10,9 @@ import {
   Check, 
   Download, 
   RotateCcw, 
-  HelpCircle,
-  ArrowRight,
-  ShieldAlert
+  ArrowUpRight,
+  ShieldAlert,
+  Terminal
 } from 'lucide-react';
 import { TOOLS } from '../../data/toolsData';
 
@@ -25,7 +25,7 @@ export default function ToolPage({
   onAction,
   loading = false,
   error = null,
-  result = null, // { status: 'safe'|'warning'|'danger'|'info', summary: string, explanation: string, details?: ReactNode, rawTextForExport?: string }
+  result = null,
   onClear,
   helpLines = [],
   relatedToolIds = [],
@@ -34,27 +34,33 @@ export default function ToolPage({
   const [showDetails, setShowDetails] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Status badge config with both icon and text (never color alone)
+  const toolMeta = TOOLS.find(t => t.id === toolId);
+
+  // Status configuration: Minimalist high-contrast ex8.tech palette
   const statusConfig = {
     safe: {
-      bg: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
-      icon: <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />,
-      label: 'Safe / Passed'
+      border: 'border-white/30',
+      badge: 'bg-white text-black border border-white font-bold',
+      dot: 'bg-emerald-400',
+      label: 'SAFE // VERIFIED'
     },
     warning: {
-      bg: 'bg-amber-500/10 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/30',
-      icon: <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />,
-      label: 'Notice / Caution'
+      border: 'border-amber-500/50',
+      badge: 'bg-amber-950/40 text-amber-300 border border-amber-500/40 font-bold',
+      dot: 'bg-amber-400',
+      label: 'WARNING // REVIEW'
     },
     danger: {
-      bg: 'bg-rose-500/10 dark:bg-rose-500/20 text-rose-800 dark:text-rose-400 border-rose-500/30',
-      icon: <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />,
-      label: 'Action Required / Danger'
+      border: 'border-rose-500/50',
+      badge: 'bg-rose-950/40 text-rose-300 border border-rose-500/40 font-bold',
+      dot: 'bg-rose-400',
+      label: 'DANGER // ALERT'
     },
     info: {
-      bg: 'bg-cyan-500/10 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border-cyan-500/30',
-      icon: <CheckCircle2 className="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0" aria-hidden="true" />,
-      label: 'Information Ready'
+      border: 'border-white/20',
+      badge: 'bg-zinc-900 text-white border border-white/30 font-bold',
+      dot: 'bg-white',
+      label: 'NOMINAL // READY'
     }
   };
 
@@ -73,7 +79,7 @@ export default function ToolPage({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${toolId}-result-${Date.now()}.txt`;
+    a.download = `ex8-${toolId}-${Date.now()}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -81,26 +87,35 @@ export default function ToolPage({
   };
 
   const relatedTools = TOOLS.filter(t => relatedToolIds.includes(t.id));
+  const currentStatus = statusConfig[result?.status] || statusConfig.info;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-fadeIn">
-      {/* a) Title + Plain-English Description */}
-      <header className="space-y-2 border-b border-slate-200 dark:border-slate-800 pb-6">
-        <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
-          <span>Nexus Cybersecurity Toolkit</span>
-          <span>•</span>
-          <span className="capitalize">{toolId.replace('-', ' ')}</span>
+    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-8 animate-fadeIn text-white">
+      {/* 1. Breadcrumb Header & Chunky Pixel Title */}
+      <header className="space-y-4 border-b border-white/10 pb-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono tracking-widest uppercase text-zinc-500">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="hover:text-white transition-colors">OUR APPS</Link>
+            <span>//</span>
+            <span className="text-white font-bold">
+              {toolMeta?.code || 'APP'}
+            </span>
+          </div>
+          <span className="px-2 py-0.5 border border-white/20 text-zinc-400 text-[10px]">
+            {toolMeta?.mode || '100% CLIENT-SIDE'}
+          </span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+
+        <h1 className="font-pixel text-3xl sm:text-5xl font-bold uppercase tracking-tight text-white leading-tight">
           {title}
         </h1>
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300">
+        <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl font-sans leading-relaxed">
           {description}
         </p>
       </header>
 
-      {/* b) INPUT Area */}
-      <section aria-label="Tool Input" className="space-y-4">
+      {/* 2. INPUT AREA: Minimalist black container with hairline borders */}
+      <section aria-label="Tool Input" className="border border-white/20 bg-black p-5 sm:p-7 space-y-4">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -110,40 +125,42 @@ export default function ToolPage({
         >
           {inputElement}
 
-          {/* Error Message */}
+          {/* Validation error box */}
           {error && (
             <div 
               role="alert" 
-              className="flex items-start gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-sm"
+              className="flex items-start gap-3 p-3.5 border border-rose-500/50 bg-rose-950/20 text-rose-300 text-xs font-mono"
             >
-              <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold">Unable to process input</p>
-                <p className="mt-0.5">{error}</p>
+                <span className="font-bold block mb-0.5 tracking-wider uppercase">INPUT FAULT</span>
+                <p>{error}</p>
               </div>
             </div>
           )}
 
-          {/* Children slots for tools with auxiliary non-obtrusive options */}
           {children}
 
           {onAction && (
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-semibold shadow-md shadow-cyan-900/20 hover:shadow-cyan-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 dark:focus:ring-offset-navy-950 transition-all flex items-center gap-2 text-base cursor-pointer"
+                className="px-6 py-2.5 bg-white text-black font-mono text-xs font-bold tracking-widest uppercase hover:bg-zinc-200 disabled:opacity-50 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-3.5 w-3.5 text-black" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
-                    <span>Processing...</span>
+                    <span>PROCESSING...</span>
                   </>
                 ) : (
-                  <span>{actionButtonText}</span>
+                  <>
+                    <span>{actionButtonText}</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </>
                 )}
               </button>
 
@@ -151,10 +168,10 @@ export default function ToolPage({
                 <button
                   type="button"
                   onClick={onClear}
-                  className="px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-300 text-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2.5 border border-white/20 hover:border-white text-zinc-400 hover:text-white text-xs font-mono tracking-wider uppercase transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Clear</span>
+                  <RotateCcw className="w-3 h-3" />
+                  <span>RESET</span>
                 </button>
               )}
             </div>
@@ -162,76 +179,74 @@ export default function ToolPage({
         </form>
       </section>
 
-      {/* c) RESULT Area */}
+      {/* 3. RESULT AREA: High-contrast ex8.tech telemetry card */}
       {result && (
         <section 
           aria-label="Analysis Results"
-          className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900 shadow-xl overflow-hidden transition-all duration-300"
+          className={`border ${currentStatus.border} bg-black overflow-hidden animate-fadeIn space-y-4`}
         >
-          {/* Summary & Verdict Banner */}
-          <div className="p-6 sm:p-7 border-b border-slate-100 dark:border-slate-800/80 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div 
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs sm:text-sm font-semibold ${
-                  (statusConfig[result.status] || statusConfig.info).bg
-                }`}
-              >
-                {(statusConfig[result.status] || statusConfig.info).icon}
-                <span>{(statusConfig[result.status] || statusConfig.info).label}</span>
+          <div className="p-5 sm:p-7 space-y-4">
+            {/* Status Header & Action Buttons */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+              <div className={`inline-flex items-center gap-2 px-3 py-1 text-xs font-mono tracking-widest uppercase ${currentStatus.badge}`}>
+                <span className={`w-2 h-2 rounded-full ${currentStatus.dot} animate-pulse`}></span>
+                <span>{currentStatus.label}</span>
               </div>
 
-              {/* Action Buttons: Copy, Download, Clear */}
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleCopy}
-                  title="Copy result text to clipboard"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+                  title="Copy result text"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono uppercase tracking-wider border border-white/20 hover:border-white text-zinc-300 hover:text-white transition-colors"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copied ? 'COPIED' : 'COPY'}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleDownload}
-                  title="Download result report as text file"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+                  title="Export result"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono uppercase tracking-wider border border-white/20 hover:border-white text-zinc-300 hover:text-white transition-colors"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download</span>
+                  <Download className="w-3 h-3" />
+                  <span>EXPORT</span>
                 </button>
               </div>
             </div>
 
-            {/* Big Plain-English Summary */}
+            {/* Plain-English Briefing */}
             <div className="space-y-1.5">
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 className="text-base sm:text-lg font-bold text-white font-mono uppercase tracking-wide">
                 {result.summary}
               </h2>
               {result.explanation && (
-                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-sans">
                   {result.explanation}
                 </p>
               )}
             </div>
           </div>
 
-          {/* d) "Show details" toggle for technical data */}
+          {/* Technical Details Toggle */}
           {result.details && (
-            <div className="border-t border-slate-100 dark:border-slate-800">
+            <div className="border-t border-white/10">
               <button
                 type="button"
                 onClick={() => setShowDetails(!showDetails)}
                 aria-expanded={showDetails}
-                className="w-full px-6 py-4 flex items-center justify-between text-left text-sm font-semibold text-cyan-600 dark:text-cyan-400 hover:bg-slate-50 dark:hover:bg-navy-800/50 transition-colors"
+                className="w-full px-5 py-3 flex items-center justify-between text-left text-xs font-mono tracking-widest uppercase text-zinc-400 hover:text-white hover:bg-zinc-950 transition-colors"
               >
-                <span>{showDetails ? 'Hide Technical Details' : 'Show Technical Details'}</span>
-                {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                <span className="flex items-center gap-2">
+                  <Terminal className="w-3.5 h-3.5" />
+                  <span>{showDetails ? 'COLLAPSE TECHNICAL DATA' : 'INSPECT TECHNICAL DATA & TELEMETRY'}</span>
+                </span>
+                {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
 
               {showDetails && (
-                <div className="px-6 py-5 bg-slate-50/80 dark:bg-navy-950/60 border-t border-slate-200/80 dark:border-slate-800 space-y-4">
+                <div className="p-5 sm:p-7 bg-zinc-950 border-t border-white/10 space-y-4 font-mono text-xs">
                   {result.details}
                 </div>
               )}
@@ -240,46 +255,51 @@ export default function ToolPage({
         </section>
       )}
 
-      {/* f) "What does this mean?" help box */}
+      {/* 4. Operational Context / Manual */}
       {helpLines && helpLines.length > 0 && (
         <aside 
-          aria-label="Educational Guidance"
-          className="rounded-2xl p-6 bg-slate-100/70 dark:bg-navy-900/60 border border-slate-200 dark:border-slate-800/80 space-y-3"
+          aria-label="Operational Context"
+          className="border border-white/15 bg-black p-5 sm:p-6 space-y-3"
         >
-          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold text-sm">
-            <HelpCircle className="w-4 h-4 text-cyan-500" />
-            <h3>What does this mean?</h3>
+          <div>
+            <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-white">
+              WHAT DOES THIS MEAN?
+            </h3>
+            <div className="w-6 h-[2px] bg-white my-1.5"></div>
           </div>
-          <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc list-inside">
+          <ul className="space-y-1.5 text-xs text-zinc-400 font-sans">
             {helpLines.map((line, idx) => (
-              <li key={idx} className="leading-relaxed">{line}</li>
+              <li key={idx} className="leading-relaxed flex items-start gap-2">
+                <span className="text-zinc-600 font-mono">—</span>
+                <span>{line}</span>
+              </li>
             ))}
           </ul>
         </aside>
       )}
 
-      {/* g) Related tools links at the bottom */}
+      {/* 5. Adjacent Modules */}
       {relatedTools.length > 0 && (
-        <nav aria-label="Related Tools" className="pt-4 border-t border-slate-200 dark:border-slate-800">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">
-            Related Tools
+        <nav aria-label="Related Tools" className="pt-4 border-t border-white/10">
+          <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 mb-3">
+            ADJACENT APPLICATIONS
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {relatedTools.map((rt) => (
               <Link
                 key={rt.id}
                 to={rt.path}
-                className="group p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-navy-900/70 hover:border-cyan-500/50 hover:bg-slate-50 dark:hover:bg-navy-800 transition-all flex items-center justify-between"
+                className="group p-4 border border-white/15 bg-black hover:border-white transition-all flex items-center justify-between"
               >
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white text-sm group-hover:text-cyan-500 transition-colors">
+                  <div className="font-sans text-xs font-bold uppercase tracking-wider text-white group-hover:text-zinc-300">
                     {rt.name}
                   </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-                    {rt.shortDesc}
+                  <div className="font-mono text-[10px] text-zinc-500 mt-0.5">
+                    {rt.code} // {rt.mode.split(' ')[0]}
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0 ml-2" />
               </Link>
             ))}
           </div>

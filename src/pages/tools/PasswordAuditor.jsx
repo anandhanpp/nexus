@@ -21,7 +21,6 @@ export default function PasswordAuditor() {
   const [showPassword, setShowPassword] = useState(false);
   const [leakChecking, setLeakChecking] = useState(false);
   const [leakResult, setLeakResult] = useState(null);
-  const [copiedGen, setCopiedGen] = useState(false);
 
   // Generator state
   const [genLength, setGenLength] = useState(16);
@@ -57,7 +56,6 @@ export default function PasswordAuditor() {
     setLeakResult(null);
   };
 
-  // Reset leak result when password changes
   useEffect(() => {
     setLeakResult(null);
   }, [password]);
@@ -67,7 +65,7 @@ export default function PasswordAuditor() {
     'Weak': 'bg-rose-500',
     'Fair': 'bg-amber-500',
     'Strong': 'bg-emerald-500',
-    'Excellent': 'bg-cyan-500'
+    'Excellent': 'bg-emerald-400'
   };
 
   const status = password.length === 0 
@@ -77,17 +75,17 @@ export default function PasswordAuditor() {
   const summary = password.length === 0
     ? 'Enter a password to evaluate'
     : leakResult?.leaked
-      ? `Compromised! Found in ${leakResult.count.toLocaleString()} known data breaches`
+      ? `COMPROMISED // Seen in ${leakResult.count.toLocaleString()} Breaches`
       : `${audit.label} Password • Estimated Crack Time: ${audit.crackTime}`;
 
   const explanation = password.length === 0
     ? 'Passwords are analyzed in real time inside your browser memory.'
     : leakResult?.leaked
-      ? `This exact password has appeared ${leakResult.count.toLocaleString()} times in publicly disclosed data breaches. Attackers use automated dictionary scripts containing these hashes.`
-      : `With roughly ${audit.entropy} bits of entropy, a high-end password cracking rig would take ${audit.crackTime} to guess this combination.`;
+      ? `This exact hash appears ${leakResult.count.toLocaleString()} times in publicly disclosed credential breaches. Attackers include these in automated credential-stuffing dictionaries.`
+      : `With ${audit.entropy} bits of Shannon entropy, a GPU brute-force cluster guessing 10 billion combinations per second would require ~${audit.crackTime} to exhaust the search space.`;
 
   const rawExport = `NEXUS PASSWORD AUDIT REPORT
-Password Length: ${password.length}
+Length: ${password.length} characters
 Strength Score: ${audit.score} / 7 (${audit.label})
 Estimated Crack Time: ${audit.crackTime}
 Calculated Entropy: ${audit.entropy} bits
@@ -109,74 +107,74 @@ Timestamp: ${new Date().toISOString()}`;
     explanation,
     rawTextForExport: rawExport,
     details: (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Entropy & Crack time badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-            <span className="text-xs text-slate-500 block uppercase font-semibold">Security Strength</span>
-            <span className="text-sm font-bold text-slate-900 dark:text-white">{audit.label}</span>
-            <span className="text-xs text-slate-400 block mt-0.5">{audit.score} / 7 criteria met</span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] font-mono text-slate-400 block uppercase">Complexity Score</span>
+            <span className="text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-white block mt-0.5">{audit.label}</span>
+            <span className="text-[10px] font-mono text-slate-500">{audit.score} / 7 criteria met</span>
           </div>
-          <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-            <span className="text-xs text-slate-500 block uppercase font-semibold">Brute-Force Estimate</span>
-            <span className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{audit.crackTime}</span>
-            <span className="text-xs text-slate-400 block mt-0.5">@ 10 Billion guesses/sec</span>
+          <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] font-mono text-slate-400 block uppercase">Brute-Force Resistance</span>
+            <span className="text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-white truncate block mt-0.5">{audit.crackTime}</span>
+            <span className="text-[10px] font-mono text-slate-500">@ 10B guesses/sec</span>
           </div>
-          <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-            <span className="text-xs text-slate-500 block uppercase font-semibold">Shannon Entropy</span>
-            <span className="font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400">{audit.entropy} bits</span>
-            <span className="text-xs text-slate-400 block mt-0.5">Length: {password.length} chars</span>
+          <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] font-mono text-slate-400 block uppercase">Shannon Entropy</span>
+            <span className="font-mono text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">{audit.entropy} bits</span>
+            <span className="text-[10px] font-mono text-slate-500">Length: {password.length} chars</span>
           </div>
         </div>
 
-        {/* Requirements Checklist */}
-        <div className="p-4 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Complexity & Hygiene Checklist
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.length ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-navy-950'}`}>
-              {audit.checklist.length ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4" />}
-              <span>At least 8 characters (12+ recommended)</span>
+        {/* Complexity Checklist */}
+        <div className="p-4 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800 space-y-2.5">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
+            HYGIENE & PATTERN VERIFICATION
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.length ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-carbon-850'}`}>
+              {audit.checklist.length ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5" />}
+              <span>8+ characters minimum</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.length12 ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-navy-950'}`}>
-              {audit.checklist.length12 ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4" />}
-              <span>12+ characters for high security</span>
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.length12 ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-carbon-850'}`}>
+              {audit.checklist.length12 ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5" />}
+              <span>12+ characters recommended</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.lowercase ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-navy-950'}`}>
-              {audit.checklist.lowercase ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4" />}
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.lowercase ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-carbon-850'}`}>
+              {audit.checklist.lowercase ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5" />}
               <span>Lowercase letters (a–z)</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.uppercase ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-navy-950'}`}>
-              {audit.checklist.uppercase ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4" />}
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.uppercase ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-carbon-850'}`}>
+              {audit.checklist.uppercase ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5" />}
               <span>Uppercase letters (A–Z)</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.numbers ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-navy-950'}`}>
-              {audit.checklist.numbers ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4" />}
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.numbers ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-carbon-850'}`}>
+              {audit.checklist.numbers ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5" />}
               <span>Numeric digits (0–9)</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.symbols ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-navy-950'}`}>
-              {audit.checklist.symbols ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4" />}
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.symbols ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-100 dark:bg-carbon-850'}`}>
+              {audit.checklist.symbols ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5" />}
               <span>Special symbols (!@#$%^&*)</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.noSequences ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-rose-700 dark:text-rose-400 bg-rose-500/10'}`}>
-              {audit.checklist.noSequences ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4 text-rose-500" />}
-              <span>No predictable sequences (e.g. 1234, qwerty)</span>
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.noSequences ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-rose-700 dark:text-rose-400 bg-rose-500/10'}`}>
+              {audit.checklist.noSequences ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5 text-rose-500" />}
+              <span>No predictable sequences</span>
             </div>
-            <div className={`flex items-center gap-2 p-2 rounded-lg ${audit.checklist.notCommon ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-rose-700 dark:text-rose-400 bg-rose-500/10'}`}>
-              {audit.checklist.notCommon ? <Check className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4 text-rose-500" />}
-              <span>Not in common dictionary wordlist</span>
+            <div className={`flex items-center gap-2 p-2 rounded ${audit.checklist.notCommon ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-500/10' : 'text-rose-700 dark:text-rose-400 bg-rose-500/10'}`}>
+              {audit.checklist.notCommon ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <X className="w-3.5 h-3.5 text-rose-500" />}
+              <span>Not in common dictionary list</span>
             </div>
           </div>
         </div>
 
-        {/* Improvement Tips */}
+        {/* Improvement Guidance */}
         {audit.tips.length > 0 && (
-          <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20 space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 block">
-              Improvement Recommendations:
+          <div className="p-3.5 rounded-lg bg-slate-100/60 dark:bg-carbon-850 border border-slate-200 dark:border-slate-800 space-y-1.5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
+              HARDENING RECOMMENDATIONS:
             </span>
-            <ul className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 list-disc list-inside space-y-1">
+            <ul className="text-xs text-slate-600 dark:text-slate-300 list-disc list-inside space-y-0.5">
               {audit.tips.map((tip, idx) => (
                 <li key={idx}>{tip}</li>
               ))}
@@ -190,9 +188,9 @@ Timestamp: ${new Date().toISOString()}`;
   return (
     <ToolPage
       toolId="password-auditor"
-      title="Password Strength & Breach Auditor"
-      description="Test password entropy, estimated time to crack, and safely verify against known breach feeds via k-anonymity without revealing your password."
-      actionButtonText="Check for Known Leaks (k-Anonymity)"
+      title="Password Resilience & Breach Auditor"
+      description="Calculate Shannon entropy, GPU brute-force crack times, and safely test against breached credential databases via k-anonymity."
+      actionButtonText="CHECK LEAK FEEDS (K-ANONYMITY)"
       onAction={handleLeakCheck}
       loading={leakChecking}
       result={resultData}
@@ -206,12 +204,12 @@ Timestamp: ${new Date().toISOString()}`;
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label htmlFor="password-input" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                Password or Passphrase
+              <label htmlFor="password-input" className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
+                CREDENTIAL PASSPHRASE
               </label>
-              <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                <Lock className="w-3.5 h-3.5" />
-                <span>Zero Server Upload: Evaluated 100% in Browser</span>
+              <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+                <Lock className="w-3 h-3" />
+                <span>EVALUATED IN RAM ONLY</span>
               </div>
             </div>
 
@@ -221,33 +219,33 @@ Timestamp: ${new Date().toISOString()}`;
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Type or generate a password to inspect..."
-                className="w-full pl-4 pr-12 py-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-navy-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-base transition-colors"
+                placeholder="Type or generate a passphrase to audit..."
+                className="w-full pl-3.5 pr-10 py-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-carbon-850 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
 
             {/* Live Progress Strength Bar */}
             {password.length > 0 && (
-              <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-slate-500">Strength Rating:</span>
-                  <span className="text-slate-900 dark:text-white">{audit.label}</span>
+              <div className="space-y-1 pt-1 font-mono text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 text-[11px]">ENTROPY METRIC:</span>
+                  <span className="text-slate-900 dark:text-white font-bold">{audit.label}</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex gap-1">
+                <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-carbon-800 overflow-hidden flex gap-0.5">
                   {[1, 2, 3, 4, 5, 6, 7].map((step) => (
                     <div
                       key={step}
-                      className={`h-full flex-1 transition-all duration-300 rounded-full ${
+                      className={`h-full flex-1 transition-all duration-200 rounded-full ${
                         step <= audit.score
-                          ? strengthColorMap[audit.label] || 'bg-cyan-500'
+                          ? strengthColorMap[audit.label] || 'bg-emerald-500'
                           : 'bg-transparent'
                       }`}
                     />
@@ -257,26 +255,26 @@ Timestamp: ${new Date().toISOString()}`;
             )}
           </div>
 
-          {/* Built-in Generator Accordion / Panel */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-navy-900/40 space-y-3">
+          {/* Tactical Generator Box */}
+          <div className="rounded-lg border border-slate-200 dark:border-slate-800 p-3.5 bg-slate-50/50 dark:bg-carbon-900/60 space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-cyan-500" />
-                Strong Password Generator
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                CRYPTO PASSWORD GENERATOR
               </span>
               <button
                 type="button"
                 onClick={handleGenerate}
-                className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 flex items-center gap-1 cursor-pointer"
+                className="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
-                <span>Generate New</span>
+                <span>GENERATE NEW</span>
               </button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs">
+            <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
               <div className="flex items-center gap-2">
-                <label htmlFor="gen-len" className="text-slate-500 font-medium">Length ({genLength}):</label>
+                <label htmlFor="gen-len" className="text-slate-400">LENGTH ({genLength}):</label>
                 <input
                   id="gen-len"
                   type="range"
@@ -284,48 +282,48 @@ Timestamp: ${new Date().toISOString()}`;
                   max="64"
                   value={genLength}
                   onChange={(e) => setGenLength(parseInt(e.target.value, 10))}
-                  className="w-24 accent-cyan-500"
+                  className="w-24 accent-emerald-500"
                 />
               </div>
 
-              <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-1 cursor-pointer text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={genOptions.uppercase}
                   onChange={(e) => setGenOptions({ ...genOptions, uppercase: e.target.checked })}
-                  className="rounded text-cyan-600 focus:ring-cyan-500"
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
                 <span>A-Z</span>
               </label>
 
-              <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-1 cursor-pointer text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={genOptions.lowercase}
                   onChange={(e) => setGenOptions({ ...genOptions, lowercase: e.target.checked })}
-                  className="rounded text-cyan-600 focus:ring-cyan-500"
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
                 <span>a-z</span>
               </label>
 
-              <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-1 cursor-pointer text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={genOptions.numbers}
                   onChange={(e) => setGenOptions({ ...genOptions, numbers: e.target.checked })}
-                  className="rounded text-cyan-600 focus:ring-cyan-500"
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
                 <span>0-9</span>
               </label>
 
-              <label className="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-300">
+              <label className="flex items-center gap-1 cursor-pointer text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={genOptions.symbols}
                   onChange={(e) => setGenOptions({ ...genOptions, symbols: e.target.checked })}
-                  className="rounded text-cyan-600 focus:ring-cyan-500"
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <span>Symbols (!@#)</span>
+                <span>Symbols</span>
               </label>
             </div>
           </div>

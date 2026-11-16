@@ -32,70 +32,68 @@ Timestamp: ${new Date().toISOString()}`;
         rawTextForExport: rawExport,
         details: (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs text-slate-500 block uppercase font-semibold">Normalized MAC</span>
-                <span className="font-mono text-sm font-bold text-slate-900 dark:text-white">{data.formattedMac}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] font-mono text-slate-400 block uppercase">Normalized MAC</span>
+                <span className="font-mono text-xs sm:text-sm font-bold text-slate-900 dark:text-white block mt-0.5">{data.formattedMac}</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs text-slate-500 block uppercase font-semibold">OUI Prefix (Vendor ID)</span>
-                <span className="font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400">{data.oui}</span>
+              <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] font-mono text-slate-400 block uppercase">OUI Prefix (IEEE ID)</span>
+                <span className="font-mono text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">{data.oui}</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs text-slate-500 block uppercase font-semibold">Vendor / Maker</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{data.vendor}</span>
+              <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] font-mono text-slate-400 block uppercase">Hardware Vendor</span>
+                <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate block mt-0.5">{data.vendor}</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs text-slate-500 block uppercase font-semibold">Transmission Mode</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">{data.castType}</span>
-                <span className="text-xs text-slate-500 block mt-0.5">I/G Bit: {data.isMulticast ? '1 (Group)' : '0 (Individual)'}</span>
+              <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] font-mono text-slate-400 block uppercase">Transmission Mode</span>
+                <span className="text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-white block mt-0.5">{data.castType}</span>
+                <span className="text-[10px] font-mono text-slate-500">I/G Bit: {data.isMulticast ? '1 (Group)' : '0 (Individual)'}</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs text-slate-500 block uppercase font-semibold">Address Scope</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">{data.adminType}</span>
-                <span className="text-xs text-slate-500 block mt-0.5">U/L Bit: {data.isLocal ? '1 (Local)' : '0 (Universal)'}</span>
+              <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] font-mono text-slate-400 block uppercase">Administration Bit</span>
+                <span className="text-xs sm:text-sm font-mono font-bold text-slate-900 dark:text-white block mt-0.5">{data.adminType.split(' ')[0]}</span>
+                <span className="text-[10px] font-mono text-slate-500">U/L Bit: {data.isLocal ? '1 (Local Admin)' : '0 (Global)'}</span>
               </div>
-              <div className="p-3.5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
-                <span className="text-xs text-slate-500 block uppercase font-semibold">Wi-Fi Privacy Address</span>
-                <span className={`text-sm font-bold ${data.isLocal ? 'text-amber-500' : 'text-slate-400'}`}>
-                  {data.isLocal ? 'Active (Phone / Tablet Randomized MAC)' : 'Standard Hardware Burned-In'}
+              <div className="p-3 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
+                <span className="text-[10px] font-mono text-slate-400 block uppercase">Privacy Randomization</span>
+                <span className={`text-xs font-mono font-bold block mt-0.5 ${data.isLocal ? 'text-amber-500' : 'text-slate-400'}`}>
+                  {data.isLocal ? 'ACTIVE (OS RANDOMIZED)' : 'INACTIVE (BURNED-IN)'}
                 </span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20 text-xs sm:text-sm text-cyan-950 dark:text-cyan-200 leading-relaxed">
-              <span className="font-semibold block mb-1">Wi-Fi MAC Randomization Note:</span>
-              iOS (Private Wi-Fi Address), Android 10+, and Windows 10/11 randomize MAC addresses per Wi-Fi SSID by default. If the U/L bit is 1, the device vendor cannot be matched because the address is dynamically generated by the operating system for privacy.
+            <div className="p-3.5 rounded-lg bg-slate-100/60 dark:bg-carbon-850 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-mono">
+              <span className="font-bold text-slate-800 dark:text-slate-200 block mb-0.5">// PRIVACY MAC BIT NOTE:</span>
+              iOS, Android 10+, and Windows 10/11 randomize MAC addresses across Wi-Fi networks by setting the Universally/Locally Administered (U/L) bit to 1. If this bit is set, the hardware manufacturer cannot be matched against the standard IEEE OUI directory.
             </div>
           </div>
         )
       });
     } catch (err) {
-      setError(err.message || 'Invalid MAC address. Please check format.');
+      setError(err.message || 'Invalid MAC format. Please check characters.');
     }
   };
 
   const handleExample = (exampleMac) => {
     setMacInput(exampleMac);
-    setTimeout(() => {
-      try {
-        const data = analyzeMacAddress(exampleMac);
-        setResult({
-          status: data.isLocal ? 'warning' : 'safe',
-          summary: `${data.vendor} • ${data.formattedMac}`,
-          explanation: data.explanation,
-          rawTextForExport: `Normalized: ${data.formattedMac}\nVendor: ${data.vendor}`
-        });
-      } catch {}
-    }, 50);
+    try {
+      const data = analyzeMacAddress(exampleMac);
+      setResult({
+        status: data.isLocal ? 'warning' : 'safe',
+        summary: `${data.vendor} • ${data.formattedMac}`,
+        explanation: data.explanation,
+        rawTextForExport: `Normalized: ${data.formattedMac}\nVendor: ${data.vendor}`
+      });
+    } catch {}
   };
 
   return (
     <ToolPage
       toolId="mac-recon"
       title="MAC Reconnaissance & OUI Lookup"
-      description="Inspect network hardware MAC addresses to uncover the manufacturer and check whether privacy address randomization is active."
-      actionButtonText="Identify MAC"
+      description="Identify hardware vendors, unicast/multicast bit designations, and detect OS Wi-Fi privacy MAC randomization."
+      actionButtonText="ANALYZE MAC"
       onAction={handleAnalyze}
       error={error}
       result={result}
@@ -109,15 +107,15 @@ Timestamp: ${new Date().toISOString()}`;
       inputElement={
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label htmlFor="mac-input" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              MAC Address
+            <label htmlFor="mac-input" className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
+              HARDWARE MAC ADDRESS
             </label>
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span>Try:</span>
+            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <span>TEST:</span>
               <button 
                 type="button" 
                 onClick={() => handleExample('B8:27:EB:12:34:56')}
-                className="text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+                className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
               >
                 Raspberry Pi
               </button>
@@ -125,7 +123,7 @@ Timestamp: ${new Date().toISOString()}`;
               <button 
                 type="button" 
                 onClick={() => handleExample('00:0C:29:AB:CD:EF')}
-                className="text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+                className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
               >
                 VMware
               </button>
@@ -137,7 +135,7 @@ Timestamp: ${new Date().toISOString()}`;
             value={macInput}
             onChange={(e) => setMacInput(e.target.value)}
             placeholder="e.g. 00:1A:2B:3C:4D:5E or 001A.2B3C.4D5E"
-            className="w-full px-4 py-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-navy-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-base transition-colors"
+            className="w-full px-3.5 py-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-carbon-850 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
           />
         </div>
       }

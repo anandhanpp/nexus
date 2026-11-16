@@ -1,208 +1,196 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  Shield, 
-  Sun, 
-  Moon, 
-  Menu, 
-  X, 
-  ChevronDown, 
-  Network, 
-  Key, 
-  ShieldCheck,
-  Search
-} from 'lucide-react';import { CATEGORIES, TOOLS } from '../../data/toolsData';
+import { Menu, X, ArrowUpRight, Shield, Terminal, ArrowRight } from 'lucide-react';
+import { CATEGORIES, TOOLS } from '../../data/toolsData';
 
-export default function Navbar({ darkMode, setDarkMode }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  // Close menus on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
-    setCategoryDropdownOpen(false);
+    setMenuOpen(false);
   }, [location.pathname]);
 
-  // Click outside to close category dropdown
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setCategoryDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const getCategoryIcon = (iconName) => {
-    switch (iconName) {
-      case 'Network': return <Network className="w-4 h-4 text-cyan-400" />;
-      case 'Key': return <Key className="w-4 h-4 text-cyan-400" />;
-      case 'ShieldCheck': return <ShieldCheck className="w-4 h-4 text-cyan-400" />;
-      default: return <Shield className="w-4 h-4 text-cyan-400" />;
-    }
-  };
-
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/90 dark:bg-navy-950/90 border-b border-slate-200 dark:border-slate-800 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 group-hover:scale-105 transition-transform">
-              <Shield className="w-5 h-5 fill-cyan-500/20" />
-            </div>
-            <div>
-              <span className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center">
-                NEXUS<span className="text-cyan-600 dark:text-cyan-400 ml-1">HUB</span>
-              </span>
-              <span className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 tracking-wider uppercase font-semibold">
-                Cybersecurity Toolkit
-              </span>
-            </div>
-          </Link>
+    <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-md border-b border-white/10 select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+        {/* Brand Logo: Chunky Pixel font matching ex8.tech screenshot */}
+        <Link to="/" className="flex items-center gap-3 group">
+          <span className="font-pixel text-3xl sm:text-4xl font-bold tracking-widest text-white group-hover:text-zinc-300 transition-colors">
+            EX8
+          </span>
+          <span className="hidden sm:inline-block font-mono text-[10px] text-zinc-500 tracking-[0.2em] uppercase border-l border-white/20 pl-3">
+            NEXUS CYBER TOOLKIT
+          </span>
+        </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link
-              to="/"
-              className={`text-sm font-medium transition-colors ${
-                location.pathname === '/' 
-                  ? 'text-cyan-600 dark:text-cyan-400 font-semibold' 
-                  : 'text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400'
-              }`}
+        {/* Desktop Quick Links & Menu trigger */}
+        <div className="flex items-center gap-6 sm:gap-8">
+          <nav className="hidden md:flex items-center gap-8 text-xs font-mono tracking-widest uppercase text-zinc-400">
+            <Link 
+              to="/" 
+              className={`hover:text-white transition-colors ${location.pathname === '/' ? 'text-white border-b border-white pb-0.5' : ''}`}
             >
-              All Tools
+              Browse Apps
             </Link>
-
-            {/* Categories Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
-                aria-expanded={categoryDropdownOpen}
-                className="flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 focus:outline-none transition-colors"
-              >
-                <span>Categories</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${categoryDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {categoryDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 rounded-2xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-50 animate-fadeIn">
-                  {CATEGORIES.map(cat => {
-                    const categoryTools = TOOLS.filter(t => t.category === cat.id && t.status === 'ready');
-                    return (
-                      <div key={cat.id} className="px-3 py-2 border-b border-slate-100 dark:border-slate-800/80 last:border-b-0">
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-1 px-2">
-                          {getCategoryIcon(cat.icon)}
-                          <span>{cat.name}</span>
-                        </div>
-                        <div className="space-y-0.5">
-                          {categoryTools.map(t => (
-                            <Link
-                              key={t.id}
-                              to={t.path}
-                              className="block px-2 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-navy-800 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
-                            >
-                              {t.name}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <Link
-              to="/about"
-              className={`text-sm font-medium transition-colors ${
-                location.pathname === '/about' 
-                  ? 'text-cyan-600 dark:text-cyan-400 font-semibold' 
-                  : 'text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400'
-              }`}
+            <Link 
+              to="/about" 
+              className={`hover:text-white transition-colors ${location.pathname === '/about' ? 'text-white border-b border-white pb-0.5' : ''}`}
             >
-              About
+              Architecture
             </Link>
-
-            <Link
-              to="/privacy"
-              className={`text-sm font-medium transition-colors ${
-                location.pathname === '/privacy' 
-                  ? 'text-cyan-600 dark:text-cyan-400 font-semibold' 
-                  : 'text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400'
-              }`}
+            <Link 
+              to="/privacy" 
+              className={`hover:text-white transition-colors ${location.pathname === '/privacy' ? 'text-white border-b border-white pb-0.5' : ''}`}
             >
-              Privacy
+              Zero-Telemetry
             </Link>
-          </div>
+          </nav>
 
-          {/* Right side: Dark/Light Mode toggle & Mobile Hamburger */}
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setDarkMode(!darkMode)}
-              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              {darkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-700" />}
-            </button>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Toggle mobile menu"
-                className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 transition-colors"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
-          </div>
+          {/* MENU Button: exactly like ex8.tech top right */}
+          <button 
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 text-xs font-mono font-medium tracking-widest uppercase text-white hover:text-zinc-300 transition-colors py-1.5 px-3 border border-white/20 hover:border-white/60"
+            aria-label="Toggle Navigation Menu"
+          >
+            <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
+            {menuOpen ? (
+              <X className="w-4 h-4 text-white" />
+            ) : (
+              <div className="flex flex-col gap-[3px] w-4 justify-center">
+                <span className="w-full h-[1.5px] bg-white"></span>
+                <span className="w-full h-[1.5px] bg-white"></span>
+                <span className="w-full h-[1.5px] bg-white"></span>
+              </div>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden px-4 pt-2 pb-6 space-y-3 bg-white dark:bg-navy-950 border-b border-slate-200 dark:border-slate-800 animate-fadeIn">
-          <Link
-            to="/"
-            className="block px-3 py-2 rounded-xl text-base font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-navy-900"
-          >
-            All Tools
-          </Link>
-          <div className="pl-3 space-y-1">
-            <span className="text-xs uppercase font-bold text-slate-400 dark:text-slate-500">Categories</span>
-            {TOOLS.filter(t => t.status === 'ready').map(t => (
-              <Link
-                key={t.id}
-                to={t.path}
-                className="block py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-cyan-500"
-              >
-                {t.name}
-              </Link>
-            ))}
-          </div>
-          <div className="border-t border-slate-200 dark:border-slate-800 pt-2 space-y-1">
-            <Link
-              to="/about"
-              className="block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-900"
-            >
-              About
-            </Link>
-            <Link
-              to="/privacy"
-              className="block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-900"
-            >
-              Privacy & Zero-Knowledge Notice
-            </Link>
+      {/* Fullscreen / Drawer Menu overlay */}
+      {menuOpen && (
+        <div className="border-t border-white/10 bg-black/98 px-4 sm:px-8 py-8 animate-fadeIn max-h-[85vh] overflow-y-auto">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="md:col-span-1 space-y-4">
+              <span className="font-pixel text-2xl text-white block">EX8 // SYSTEM</span>
+              <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+                Autonomous, zero-knowledge browser security suite. All cryptographic algorithms run locally with zero cloud telemetry.
+              </p>
+              <div className="pt-2">
+                <Link
+                  to="/"
+                  onClick={() => setMenuOpen(false)}
+                  className="inline-flex items-center gap-2 text-xs font-mono uppercase bg-white text-black px-4 py-2 hover:bg-zinc-200 transition-colors"
+                >
+                  <span>Launch All Utilities</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Network utilities */}
+            <div className="space-y-3">
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 block border-b border-white/10 pb-1">
+                [NET] Network Recon
+              </span>
+              <ul className="space-y-2 text-xs font-mono">
+                {TOOLS.filter(t => t.category === 'network').map(tool => (
+                  <li key={tool.id}>
+                    <Link
+                      to={tool.path}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-zinc-300 hover:text-white flex items-center justify-between py-1 group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform">
+                        {tool.code} // {tool.name}
+                      </span>
+                      {tool.status === 'coming-soon' ? (
+                        <span className="text-[9px] text-zinc-600 uppercase">WIP</span>
+                      ) : (
+                        <ArrowUpRight className="w-3 h-3 text-zinc-500 group-hover:text-white" />
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Cryptography utilities */}
+            <div className="space-y-3">
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 block border-b border-white/10 pb-1">
+                [CRY] Passwords & Crypto
+              </span>
+              <ul className="space-y-2 text-xs font-mono">
+                {TOOLS.filter(t => t.category === 'passwords').map(tool => (
+                  <li key={tool.id}>
+                    <Link
+                      to={tool.path}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-zinc-300 hover:text-white flex items-center justify-between py-1 group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform">
+                        {tool.code} // {tool.name}
+                      </span>
+                      {tool.status === 'coming-soon' ? (
+                        <span className="text-[9px] text-zinc-600 uppercase">WIP</span>
+                      ) : (
+                        <ArrowUpRight className="w-3 h-3 text-zinc-500 group-hover:text-white" />
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Integrity & Docs */}
+            <div className="space-y-3">
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 block border-b border-white/10 pb-1">
+                [INT] System & Docs
+              </span>
+              <ul className="space-y-2 text-xs font-mono">
+                {TOOLS.filter(t => t.category === 'integrity').map(tool => (
+                  <li key={tool.id}>
+                    <Link
+                      to={tool.path}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-zinc-300 hover:text-white flex items-center justify-between py-1 group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform">
+                        {tool.code} // {tool.name}
+                      </span>
+                      {tool.status === 'coming-soon' ? (
+                        <span className="text-[9px] text-zinc-600 uppercase">WIP</span>
+                      ) : (
+                        <ArrowUpRight className="w-3 h-3 text-zinc-500 group-hover:text-white" />
+                      )}
+                    </Link>
+                  </li>
+                ))}
+                <li className="pt-2 border-t border-white/10">
+                  <Link
+                    to="/about"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-zinc-400 hover:text-white flex items-center justify-between py-1"
+                  >
+                    <span>System Specifications</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/privacy"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-zinc-400 hover:text-white flex items-center justify-between py-1"
+                  >
+                    <span>Egress Network Audit</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 }

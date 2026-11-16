@@ -19,7 +19,7 @@ export default function DnsRecon() {
     setError(null);
 
     if (!domain) {
-      setError('Please enter a domain name to recon (e.g. cloudflare.com or google.com)');
+      setError('Please provide a target domain name (e.g. cloudflare.com or google.com)');
       return;
     }
 
@@ -34,8 +34,8 @@ export default function DnsRecon() {
       const rawExport = `NEXUS DNS RECON REPORT
 Domain: ${data.domain}
 Spoofing Protection Status: ${data.security.verdict}
-SPF Detected: ${data.security.hasSpf ? 'Yes' : 'No'}
-DMARC Detected: ${data.security.hasDmarc ? 'Yes' : 'No'}
+SPF Detected: ${data.security.hasSpf ? 'True' : 'False'}
+DMARC Detected: ${data.security.hasDmarc ? 'True' : 'False'}
 Total DNS Answers: ${totalRecords}
 Timestamp: ${new Date().toISOString()}
 
@@ -51,39 +51,38 @@ ${Object.entries(data.records)
         explanation,
         rawTextForExport: rawExport,
         details: (
-          <div className="space-y-6">
-            {/* SPF & DMARC Security Overview */}
-            <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800 space-y-3">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Mail className="w-4 h-4 text-cyan-500" />
-                Email Phishing & Anti-Spoofing Posture
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+          <div className="space-y-4">
+            {/* SPF & DMARC Status Card */}
+            <div className="p-4 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800 space-y-3">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
+                EMAIL ANTI-SPOOFING & PHISHING POSTURE
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div className={`p-3 rounded-lg border ${data.security.hasSpf ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300'}`}>
-                  <div className="font-bold flex items-center gap-1.5">
-                    {data.security.hasSpf ? <ShieldCheck className="w-4 h-4 text-emerald-500" /> : <ShieldAlert className="w-4 h-4 text-rose-500" />}
-                    SPF Record (Sender Policy Framework)
+                  <div className="font-mono font-bold flex items-center gap-1.5">
+                    {data.security.hasSpf ? <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> : <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />}
+                    SPF POLICY (SENDER POLICY FRAMEWORK)
                   </div>
                   <div className="mt-1 font-mono text-[11px] truncate">
-                    {data.security.hasSpf ? data.security.spfRecord : 'Missing: No SPF record configured'}
+                    {data.security.hasSpf ? data.security.spfRecord : 'UNCONFIGURED // VULNERABLE'}
                   </div>
                 </div>
 
                 <div className={`p-3 rounded-lg border ${data.security.hasDmarc ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300'}`}>
-                  <div className="font-bold flex items-center gap-1.5">
-                    {data.security.hasDmarc ? <ShieldCheck className="w-4 h-4 text-emerald-500" /> : <ShieldAlert className="w-4 h-4 text-rose-500" />}
-                    DMARC Record (Domain-based Message Authentication)
+                  <div className="font-mono font-bold flex items-center gap-1.5">
+                    {data.security.hasDmarc ? <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> : <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />}
+                    DMARC RECORD (MESSAGE AUTHENTICATION)
                   </div>
                   <div className="mt-1 font-mono text-[11px] truncate">
-                    {data.security.hasDmarc ? data.security.dmarcRecord : 'Missing: No DMARC policy configured'}
+                    {data.security.hasDmarc ? data.security.dmarcRecord : 'UNCONFIGURED // VULNERABLE'}
                   </div>
                 </div>
               </div>
             </div>
 
             {/* DNS Records Tabs */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800">
+            <div className="space-y-2">
+              <div className="flex items-center gap-1 overflow-x-auto pb-1 border-b border-slate-200 dark:border-slate-800">
                 {RECORD_TABS.map(tab => {
                   const count = (data.records[tab] || []).length;
                   return (
@@ -91,14 +90,14 @@ ${Object.entries(data.records)
                       key={tab}
                       type="button"
                       onClick={() => setActiveTab(tab)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                      className={`px-3 py-1 rounded-md text-xs font-mono font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 cursor-pointer ${
                         activeTab === tab
-                          ? 'bg-cyan-600 text-white shadow-sm'
-                          : 'bg-white dark:bg-navy-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-navy-800 border border-slate-200 dark:border-slate-800'
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'bg-white dark:bg-carbon-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
                       }`}
                     >
                       <span>{tab}</span>
-                      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${activeTab === tab ? 'bg-cyan-700 text-cyan-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'}`}>
+                      <span className={`px-1 py-0.2 rounded text-[10px] ${activeTab === tab ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-100 dark:bg-carbon-800 text-slate-500'}`}>
                         {count}
                       </span>
                     </button>
@@ -107,15 +106,15 @@ ${Object.entries(data.records)
               </div>
 
               {/* Tab Content */}
-              <div className="p-4 rounded-xl bg-white dark:bg-navy-900 border border-slate-200 dark:border-slate-800">
+              <div className="p-3.5 rounded-lg bg-white dark:bg-carbon-900 border border-slate-200 dark:border-slate-800">
                 {(!data.records[activeTab] || data.records[activeTab].length === 0) ? (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 italic py-2">
-                    No {activeTab} records returned for {data.domain}.
+                  <p className="text-xs font-mono text-slate-400 italic py-2">
+                    No {activeTab} records returned via DoH resolver.
                   </p>
                 ) : (
-                  <ul className="space-y-2">
+                  <ul className="space-y-1.5 font-mono text-xs">
                     {data.records[activeTab].map((rec, i) => (
-                      <li key={i} className="p-2.5 rounded-lg bg-slate-50 dark:bg-navy-950/80 border border-slate-100 dark:border-slate-800/80 font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-200 break-all select-all">
+                      <li key={i} className="p-2 rounded bg-slate-50 dark:bg-carbon-850 border border-slate-100 dark:border-slate-800/80 text-slate-800 dark:text-slate-200 break-all select-all">
                         {rec}
                       </li>
                     ))}
@@ -127,7 +126,7 @@ ${Object.entries(data.records)
         )
       });
     } catch (err) {
-      setError(err.message || 'DNS Recon failed. Please verify the domain and try again.');
+      setError(err.message || 'DNS resolution failed. Please verify domain name.');
     } finally {
       setLoading(false);
     }
@@ -141,9 +140,9 @@ ${Object.entries(data.records)
   return (
     <ToolPage
       toolId="dns-recon"
-      title="DNS Recon & Email Anti-Spoofing Auditor"
-      description="Inspect A, AAAA, MX, NS, and TXT records over encrypted DNS (DoH), and verify whether SPF & DMARC prevent attackers from forging emails."
-      actionButtonText="Recon Domain"
+      title="DNS Recon & Anti-Spoofing Auditor"
+      description="Inspect A, AAAA, MX, NS, and TXT records over encrypted DNS-over-HTTPS (DoH), and verify whether SPF & DMARC prevent attackers from forging emails."
+      actionButtonText="RESOLVE DOH RECORDS"
       onAction={() => handleLookup()}
       loading={loading}
       error={error}
@@ -158,15 +157,15 @@ ${Object.entries(data.records)
       inputElement={
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label htmlFor="domain-input" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Domain Name
+            <label htmlFor="domain-input" className="text-xs font-mono font-bold uppercase tracking-wider text-slate-500">
+              TARGET DOMAIN HOSTNAME
             </label>
-            <div className="flex items-center gap-2 text-xs text-slate-500">
-              <span>Try:</span>
+            <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+              <span>TEST:</span>
               <button 
                 type="button" 
                 onClick={() => handleExample('cloudflare.com')}
-                className="text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+                className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
               >
                 cloudflare.com
               </button>
@@ -174,7 +173,7 @@ ${Object.entries(data.records)
               <button 
                 type="button" 
                 onClick={() => handleExample('github.com')}
-                className="text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+                className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
               >
                 github.com
               </button>
@@ -186,7 +185,7 @@ ${Object.entries(data.records)
             value={domainInput}
             onChange={(e) => setDomainInput(e.target.value)}
             placeholder="e.g. google.com or proton.me"
-            className="w-full px-4 py-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-navy-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-base transition-colors"
+            className="w-full px-3.5 py-3 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-carbon-850 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
           />
         </div>
       }
